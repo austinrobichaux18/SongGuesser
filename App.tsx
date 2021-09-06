@@ -86,7 +86,7 @@ function SongChoices(param: songChoiceParam) {
   }, [allSongs]);
 
   useEffect(() => {
-    setSolution(choiceSongs?.sort((a, b) => Math.random() - 0.5).slice(1)[0]);
+    setSolution(choiceSongs?.sort((a, b) => Math.random() - 0.5).slice(0)[0]);
   }, [choiceSongs]);
 
   useEffect(() => {
@@ -108,9 +108,13 @@ function SongChoices(param: songChoiceParam) {
   }
 
   async function selectChoice(song: Song) {
-    const message = song.id == solution?.id ? "Correct" : "Wrong";
-    console.log(message);
-    SetChoiceSongs();
+    const isCorrect = song.id == solution?.id;
+    console.log(isCorrect);
+    if (isCorrect) {
+      setAllSongs(allSongs?.filter((s) => s.id != solution.id));
+    } else {
+      SetChoiceSongs();
+    }
   }
   return (
     <ScrollView style={{ height: 200 }}>
