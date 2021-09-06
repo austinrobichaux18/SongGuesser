@@ -13,6 +13,7 @@ import { Audio, AVPlaybackStatus } from "expo-av";
 import { Sound } from "expo-av/build/Audio";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { ProgressBar, Colors } from "react-native-paper";
 
 export default function App() {
   {
@@ -75,6 +76,8 @@ function SongChoices(param: songChoiceParam) {
   const [choiceSongs, setChoiceSongs] = useState<Song[]>();
   const [solution, setSolution] = useState<Song>();
   const [allSongs, setAllSongs] = useState<Song[]>();
+  const [timeRemaining, setTimeRemaining] = useState<number>(30);
+  const [percentageRemaining, setPercentageRemaining] = useState<number>(1);
 
   useEffect(() => {
     if (param.selectedArtist != null) {
@@ -95,10 +98,19 @@ function SongChoices(param: songChoiceParam) {
     if (solution != null) {
       cancelSong = PlaySong({ uri: solution.preview });
     }
+    const interval = setInterval(() => {
+      setTimeRemaining((seconds) => seconds - 1);
+    }, 1000);
     return () => {
       cancelSong.then((result) => result && result());
+      setTimeRemaining(30);
+      clearInterval(interval);
     };
   }, [solution]);
+
+  useEffect(() => {
+    setPercentageRemaining(timeRemaining / 30);
+  }, [timeRemaining]);
 
   async function SetChoiceSongs() {
     const length = allSongs?.length ?? 0;
@@ -121,7 +133,13 @@ function SongChoices(param: songChoiceParam) {
     }
   }
   return (
-    <ScrollView style={{ height: 200 }}>
+    <ScrollView style={{ height: 300 }}>
+      <View style={{ height: 50, flex: 1 }}>
+        <ProgressBar
+          progress={percentageRemaining}
+          style={{ height: 50 }}
+        ></ProgressBar>
+      </View>
       {choiceSongs?.map((x) => (
         <TouchableHighlight
           key={x.id}
