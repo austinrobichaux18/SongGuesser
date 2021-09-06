@@ -16,50 +16,74 @@ import { useEffect, useState } from "react";
 export default function App() {
   {
     const [text, onChangeText] = useState("red jumpsui");
-    const [artists, setArtists] = useState<Artist[]>();
-    const [allSongs, setAllSongs] = useState<Song[]>();
-    async function onChangeTextLog(t: string) {
-      onChangeText(t);
-      setArtists(await GetArtists(t));
-    }
-    async function selectArtist(artist: Artist) {
-      setAllSongs(await GetSongs(artist));
-    }
+    const [selectedArtist, setSelectedArtist] = useState<Artist>();
+
     return (
       <View style={styles.container}>
         <View>
           <TextInput
             style={styles.input}
-            onChangeText={onChangeTextLog}
+            onChangeText={onChangeText}
             value={text}
           />
         </View>
         <View style={{ backgroundColor: "dodgerblue" }}>
-          <ScrollView style={{ height: 200 }}>
-            {artists?.map((x) => (
-              <TouchableHighlight key={x.id} onPress={() => selectArtist(x)}>
-                <Text style={styles.margin}>{x.name}</Text>
-              </TouchableHighlight>
-            ))}
-          </ScrollView>
+          <ArtistChoices
+            artistNameText={text}
+            setSelectedArtist={(a) => {
+              setSelectedArtist(a);
+            }}
+          />
         </View>
         <View style={{ backgroundColor: "#f0f0f0", height: 200 }}>
-          <SongChoices songs={allSongs} />
+          <SongChoices selectedArtist={selectedArtist} />
         </View>
       </View>
     );
   }
 }
+type artistChoiceParam = {
+  artistNameText: string;
+  setSelectedArtist: (artist: Artist) => void;
+};
+
+function ArtistChoices(param: artistChoiceParam) {
+  const [allArtists, setArtists] = useState<Artist[]>();
+  useEffect(() => {
+    GetArtists(param.artistNameText).then((a) => setArtists(a));
+  }, [param.artistNameText]);
+
+  return (
+    <ScrollView style={{ height: 200 }}>
+      {allArtists?.map((x) => (
+        <TouchableHighlight
+          key={x.id}
+          onPress={() => param.setSelectedArtist(x)}
+        >
+          <Text style={styles.margin}>{x.name}</Text>
+        </TouchableHighlight>
+      ))}
+    </ScrollView>
+  );
+}
+
 type songChoiceParam = {
-  songs: Song[] | undefined;
+  selectedArtist: Artist | undefined;
 };
 function SongChoices(param: songChoiceParam) {
   const [choiceSongs, setChoiceSongs] = useState<Song[]>();
   const [solution, setSolution] = useState<Song>();
+  const [allSongs, setAllSongs] = useState<Song[]>();
 
   useEffect(() => {
-    randomizeSongs();
-  }, [param.songs]);
+    if (param.selectedArtist != null) {
+      GetSongs(param.selectedArtist).then((s) => setAllSongs(s));
+    }
+  }, [param.selectedArtist]);
+
+  useEffect(() => {
+    SetChoiceSongs();
+  }, [allSongs]);
 
   useEffect(() => {
     setSolution(choiceSongs?.sort((a, b) => Math.random() - 0.5).slice(1)[0]);
@@ -75,9 +99,9 @@ function SongChoices(param: songChoiceParam) {
     };
   }, [solution]);
 
-  async function randomizeSongs() {
-    const length = param.songs?.length ?? 0;
-    const randomOrdering = param.songs
+  async function SetChoiceSongs() {
+    const length = allSongs?.length ?? 0;
+    const randomOrdering = allSongs
       ?.sort((a, b) => Math.random() - 0.5)
       .slice(0, length > 4 ? 4 : length);
     setChoiceSongs(randomOrdering);
@@ -86,7 +110,7 @@ function SongChoices(param: songChoiceParam) {
   async function selectChoice(song: Song) {
     const message = song.id == solution?.id ? "Correct" : "Wrong";
     console.log(message);
-    randomizeSongs();
+    SetChoiceSongs();
   }
   return (
     <ScrollView style={{ height: 200 }}>
