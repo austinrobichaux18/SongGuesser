@@ -18,13 +18,13 @@ export default function App() {
     const [text, onChangeText] = useState("red jumpsui");
     const [artists, setArtists] = useState<Artist[]>();
     const [allSongs, setAllSongs] = useState<Song[]>();
-    const onChangeTextLog = async (t: string) => {
+    async function onChangeTextLog(t: string) {
       onChangeText(t);
       setArtists(await GetArtists(t));
-    };
-    const selectArtist = async (artist: Artist) => {
+    }
+    async function selectArtist(artist: Artist) {
       setAllSongs(await GetSongs(artist));
-    };
+    }
     return (
       <View style={styles.container}>
         <View>
@@ -57,17 +57,13 @@ function SongChoices(param: songChoiceParam) {
   const [choiceSongs, setChoiceSongs] = useState<Song[]>();
   const [solution, setSolution] = useState<Song>();
 
-  const randomizeSongs = async () => {
-    const length = param.songs?.length ?? 0;
-    const randomOrdering = param.songs
-      ?.sort((a, b) => Math.random() - 0.5)
-      .slice(0, length > 4 ? 4 : length);
+  useEffect(() => {
+    randomizeSongs();
+  }, [param.songs]);
 
-    setChoiceSongs(randomOrdering);
-    setSolution(
-      randomOrdering?.sort((a, b) => Math.random() - 0.5).slice(1)[0]
-    );
-  };
+  useEffect(() => {
+    setSolution(choiceSongs?.sort((a, b) => Math.random() - 0.5).slice(1)[0]);
+  }, [choiceSongs]);
 
   useEffect(() => {
     let cancelSong: Promise<() => void> = new Promise((res) => res);
@@ -79,9 +75,13 @@ function SongChoices(param: songChoiceParam) {
     };
   }, [solution]);
 
-  useEffect(() => {
-    randomizeSongs();
-  }, [param.songs]);
+  async function randomizeSongs() {
+    const length = param.songs?.length ?? 0;
+    const randomOrdering = param.songs
+      ?.sort((a, b) => Math.random() - 0.5)
+      .slice(0, length > 4 ? 4 : length);
+    setChoiceSongs(randomOrdering);
+  }
 
   async function selectChoice(song: Song) {
     const message = song.id == solution?.id ? "Correct" : "Wrong";
@@ -139,9 +139,6 @@ type playSongParam = {
   uri: string;
 };
 async function PlaySong(param: playSongParam) {
-  //const [sound, setSound] = React.useState<Sound>();
-
-  //async function playSound() {
   console.log("Loading Sound");
   const { sound } = await Audio.Sound.createAsync({
     uri: param.uri,
@@ -152,26 +149,13 @@ async function PlaySong(param: playSongParam) {
   return () => {
     sound.unloadAsync();
   };
-  //  }
-
-  // React.useEffect(() => {
-  //   return sound
-  //     ? () => {
-  //         console.log("Unloading Sound");
-  //         sound.unloadAsync();
-  //       }
-  //     : undefined;
-  // }, [sound]);
-
-  // playSound();
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
     padding: 20,
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   input: {
     height: 40,
