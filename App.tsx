@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   TouchableHighlight,
+  Alert,
 } from "react-native";
 import { Audio, AVPlaybackStatus } from "expo-av";
 import { Sound } from "expo-av/build/Audio";
@@ -110,6 +111,9 @@ function SongChoices(param: songChoiceParam) {
   async function selectChoice(song: Song) {
     const isCorrect = song.id == solution?.id;
     console.log(isCorrect);
+    Alert.alert("", isCorrect ? "Correct!" : "WRONG!", undefined, {
+      cancelable: true,
+    });
     if (isCorrect) {
       setAllSongs(allSongs?.filter((s) => s.id != solution.id));
     } else {
