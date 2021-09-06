@@ -18,7 +18,7 @@ export default function App() {
     const [text, onChangeText] = useState("red jumpsui");
     const [artists, setArtists] = useState<Artist[]>();
     const [allSongs, setAllSongs] = useState<Song[]>();
-    const onChangeTextLog = async (t) => {
+    const onChangeTextLog = async (t: string) => {
       onChangeText(t);
       setArtists(await GetArtists(t));
     };
@@ -56,7 +56,6 @@ type songChoiceParam = {
 function SongChoices(param: songChoiceParam) {
   const [choiceSongs, setChoiceSongs] = useState<Song[]>();
   const [solution, setSolution] = useState<Song>();
-  const [cancelSong, setCancelSong] = useState<() => void>();
 
   const randomizeSongs = async () => {
     const length = param.songs?.length ?? 0;
@@ -65,26 +64,24 @@ function SongChoices(param: songChoiceParam) {
       .slice(0, length > 4 ? 4 : length);
 
     setChoiceSongs(randomOrdering);
-    setSolution(choiceSongs?.sort((a, b) => Math.random() - 0.5).slice(1)[0]);
-    console.log("solution: " + solution?.title);
-    console.log("try cancel song: " + cancelSong);
-    if (cancelSong != null) {
-      cancelSong();
-    }
-    if (solution != null) {
-      // setCancelSong(await PlaySong({ uri: solution.preview }));
-      return await PlaySong({ uri: solution.preview });
-
-      console.log("cancel song: " + cancelSong);
-    }
+    setSolution(
+      randomOrdering?.sort((a, b) => Math.random() - 0.5).slice(1)[0]
+    );
   };
-  const temp = useEffect(() => {
-    const x = randomizeSongs();
+
+  useEffect(() => {
+    let cancelSong: Promise<() => void> = new Promise((res) => res);
+    if (solution != null) {
+      cancelSong = PlaySong({ uri: solution.preview });
+    }
     return () => {
-      x.then((a) => a && a());
+      cancelSong.then((result) => result && result());
     };
+  }, [solution]);
+
+  useEffect(() => {
+    randomizeSongs();
   }, [param.songs]);
-  console.log("temp: " + temp);
 
   async function selectChoice(song: Song) {
     const message = song.id == solution?.id ? "Correct" : "Wrong";
