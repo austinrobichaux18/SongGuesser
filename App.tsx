@@ -17,8 +17,8 @@ import { ProgressBar, Colors } from "react-native-paper";
 
 export default function App() {
   {
-    const [text, onChangeText] = useState("red jumpsui");
-    const [selectedArtist, setSelectedArtist] = useState<Artist>();
+    const [text, onChangeText] = useState("disturbe");
+    const [selectedArtist, setSelectedArtist] = useState<Artist | undefined>();
 
     return (
       <View style={styles.container}>
@@ -38,7 +38,12 @@ export default function App() {
           />
         </View>
         <View style={{ backgroundColor: "#f0f0f0", height: 200 }}>
-          <SongChoices selectedArtist={selectedArtist} />
+          <SongChoices
+            selectedArtist={selectedArtist}
+            setSelectedArtist={(a) => {
+              setSelectedArtist(a);
+            }}
+          />
         </View>
       </View>
     );
@@ -71,6 +76,7 @@ function ArtistChoices(param: artistChoiceParam) {
 
 type songChoiceParam = {
   selectedArtist: Artist | undefined;
+  setSelectedArtist: (artist: Artist | undefined) => void;
 };
 function SongChoices(param: songChoiceParam) {
   const [choiceSongs, setChoiceSongs] = useState<Song[]>();
@@ -100,6 +106,8 @@ function SongChoices(param: songChoiceParam) {
       finalScoreMessage += ")";
       Alert.alert("Game Over", "Final Score: " + score + finalScoreMessage);
       setScore(0);
+      param.setSelectedArtist(undefined);
+      setIsGameStarted(false);
     }
   }, [allSongs]);
 
@@ -197,7 +205,7 @@ type Song = {
 function GetSongs(parameter: Artist): Promise<Song[]> {
   return axios({
     method: "get",
-    url: `https://api.deezer.com/artist/${parameter.id}/top?limit=20`,
+    url: `https://api.deezer.com/artist/${parameter.id}/top?limit=2`,
     responseType: "json",
   }).then(function (response) {
     return response.data.data as Song[];
