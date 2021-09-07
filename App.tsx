@@ -90,7 +90,10 @@ function SongChoices(param: songChoiceParam) {
   }, [allSongs]);
 
   useEffect(() => {
-    setSolution(choiceSongs?.sort((a, b) => Math.random() - 0.5).slice(0)[0]);
+    if (choiceSongs == null) {
+      return;
+    }
+    setSolution(choiceSongs[Math.floor(Math.random() * choiceSongs.length)]);
   }, [choiceSongs]);
 
   useEffect(() => {
