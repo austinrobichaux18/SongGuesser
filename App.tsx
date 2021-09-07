@@ -79,6 +79,7 @@ function SongChoices(param: songChoiceParam) {
   const [timeRemaining, setTimeRemaining] = useState<number>(30);
   const [percentageRemaining, setPercentageRemaining] = useState<number>(1);
   const [score, setScore] = useState<number>(0);
+  const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
 
   useEffect(() => {
     if (param.selectedArtist != null) {
@@ -88,12 +89,17 @@ function SongChoices(param: songChoiceParam) {
 
   useEffect(() => {
     SetChoiceSongs();
+    if (isGameStarted && allSongs && allSongs.length == 0) {
+      Alert.alert("Game Over", "Final Score: " + score);
+      setScore(0);
+    }
   }, [allSongs]);
 
   useEffect(() => {
     if (choiceSongs == null) {
       return;
     }
+    setIsGameStarted(true);
     setSolution(choiceSongs[Math.floor(Math.random() * choiceSongs.length)]);
   }, [choiceSongs]);
 
@@ -183,7 +189,7 @@ type Song = {
 function GetSongs(parameter: Artist): Promise<Song[]> {
   return axios({
     method: "get",
-    url: `https://api.deezer.com/artist/${parameter.id}/top?limit=20`,
+    url: `https://api.deezer.com/artist/${parameter.id}/top?limit=2`,
     responseType: "json",
   }).then(function (response) {
     return response.data.data as Song[];
