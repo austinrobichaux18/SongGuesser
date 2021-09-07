@@ -94,13 +94,14 @@ function SongChoices(param: songChoiceParam) {
   }, [choiceSongs]);
 
   useEffect(() => {
+    let interval: NodeJS.Timer;
     let cancelSong: Promise<() => void> = new Promise((res) => res);
     if (solution != null) {
       cancelSong = PlaySong({ uri: solution.preview });
+      interval = setInterval(() => {
+        setTimeRemaining((seconds) => seconds - 1);
+      }, 1000);
     }
-    const interval = setInterval(() => {
-      setTimeRemaining((seconds) => seconds - 1);
-    }, 1000);
     return () => {
       cancelSong.then((result) => result && result());
       setTimeRemaining(30);
@@ -111,6 +112,13 @@ function SongChoices(param: songChoiceParam) {
   useEffect(() => {
     setPercentageRemaining(timeRemaining / 30);
   }, [timeRemaining]);
+
+  useEffect(() => {
+    if (percentageRemaining == 0) {
+      Alert.alert("Ran out of time", "Better luck in the next round...");
+      SetChoiceSongs();
+    }
+  }, [percentageRemaining]);
 
   async function SetChoiceSongs() {
     const length = allSongs?.length ?? 0;
@@ -123,7 +131,7 @@ function SongChoices(param: songChoiceParam) {
   async function selectChoice(song: Song) {
     const isCorrect = song.id == solution?.id;
     console.log(isCorrect);
-    Alert.alert("", isCorrect ? "Correct!" : "WRONG!", undefined, {
+    Alert.alert("", isCorrect ? "NICE!" : "You SUCK!", undefined, {
       cancelable: true,
     });
     if (isCorrect) {
