@@ -205,7 +205,7 @@ type Song = {
 function GetSongs(parameter: Artist): Promise<Song[]> {
   return axios({
     method: "get",
-    url: `https://api.deezer.com/artist/${parameter.id}/top?limit=2`,
+    url: `https://api.deezer.com/artist/${parameter.id}/top?limit=20`,
     responseType: "json",
   }).then(function (response) {
     return response.data.data as Song[];
