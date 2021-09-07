@@ -78,6 +78,7 @@ function SongChoices(param: songChoiceParam) {
   const [allSongs, setAllSongs] = useState<Song[]>();
   const [timeRemaining, setTimeRemaining] = useState<number>(30);
   const [percentageRemaining, setPercentageRemaining] = useState<number>(1);
+  const [score, setScore] = useState<number>(0);
 
   useEffect(() => {
     if (param.selectedArtist != null) {
@@ -139,12 +140,15 @@ function SongChoices(param: songChoiceParam) {
     });
     if (isCorrect) {
       setAllSongs(allSongs?.filter((s) => s.id != solution.id));
+      setScore(score + 1000);
     } else {
       SetChoiceSongs();
+      setScore(score - 1000);
     }
   }
   return (
     <ScrollView style={{ height: 300 }}>
+      <Text>{score}</Text>
       <View style={{ height: 50, flex: 1 }}>
         <ProgressBar
           progress={percentageRemaining}
