@@ -90,7 +90,15 @@ function SongChoices(param: songChoiceParam) {
   useEffect(() => {
     SetChoiceSongs();
     if (isGameStarted && allSongs && allSongs.length == 0) {
-      Alert.alert("Game Over", "Final Score: " + score);
+      let finalScorePercentage = score / 20000;
+      let finalScoreMessage = " (";
+      if (score < 0) {
+        finalScoreMessage += "Do you really even know this band? ";
+      } else {
+        finalScoreMessage += finalScorePercentage * 100 + "%";
+      }
+      finalScoreMessage += ")";
+      Alert.alert("Game Over", "Final Score: " + score + finalScoreMessage);
       setScore(0);
     }
   }, [allSongs]);
@@ -189,7 +197,7 @@ type Song = {
 function GetSongs(parameter: Artist): Promise<Song[]> {
   return axios({
     method: "get",
-    url: `https://api.deezer.com/artist/${parameter.id}/top?limit=2`,
+    url: `https://api.deezer.com/artist/${parameter.id}/top?limit=20`,
     responseType: "json",
   }).then(function (response) {
     return response.data.data as Song[];
