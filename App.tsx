@@ -17,15 +17,17 @@ import { ProgressBar, Colors } from "react-native-paper";
 
 export default function App() {
   {
-    const [text, onChangeText] = useState("disturbe");
+    const [text, onChangeText] = useState<string>("");
     const [selectedArtist, setSelectedArtist] = useState<Artist | undefined>();
 
     return (
       <View style={styles.container}>
         <View>
+          <Text>Austin's Song Guesser App. Can you reach a perfect score?</Text>
           <TextInput
             style={styles.input}
             onChangeText={onChangeText}
+            placeholder="Enter an Artist"
             value={text}
           />
         </View>
@@ -169,7 +171,7 @@ function SongChoices(param: songChoiceParam) {
     }
   }
   return (
-    <ScrollView style={{ height: 300 }}>
+    <ScrollView>
       <Text>{score}</Text>
       <View style={{ height: 50, flex: 1 }}>
         <ProgressBar
@@ -242,7 +244,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 20,
+    marginTop: 30,
+    marginHorizontal: 4,
   },
   input: {
     height: 40,
