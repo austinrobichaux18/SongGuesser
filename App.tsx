@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   Alert,
   TouchableOpacityBase,
+  ImageBackground,
   TouchableOpacity,
 } from "react-native";
 import { Audio, AVPlaybackStatus } from "expo-av";
@@ -24,31 +25,39 @@ export default function App() {
 
     return (
       <View style={styles.container}>
-        <View>
-          <Text>Austin's Song Guesser App. Can you reach a perfect score?</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeText}
-            placeholder="Enter an Artist"
-            value={text}
-          />
-        </View>
-        <View style={{ backgroundColor: "#f0f0f0" }}>
-          <ArtistChoices
-            artistNameText={text}
-            setSelectedArtist={(a) => {
-              setSelectedArtist(a);
-            }}
-          />
-        </View>
-        <View style={{ backgroundColor: "#f0f0f0", height: 400 }}>
-          <SongChoices
-            selectedArtist={selectedArtist}
-            setSelectedArtist={(a) => {
-              setSelectedArtist(a);
-            }}
-          />
-        </View>
+        <ImageBackground
+          style={styles.background}
+          resizeMode="stretch"
+          source={require("./assets/deezer.png")}
+        >
+          <View>
+            <Text style={[styles.margin, { color: "white" }]}>
+              Austin's Song Guesser App. Can you reach a perfect score?
+            </Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeText}
+              placeholder="Enter an Artist"
+              value={text}
+            />
+          </View>
+          <View>
+            <ArtistChoices
+              artistNameText={text}
+              setSelectedArtist={(a) => {
+                setSelectedArtist(a);
+              }}
+            />
+          </View>
+          <View style={{ height: 400 }}>
+            <SongChoices
+              selectedArtist={selectedArtist}
+              setSelectedArtist={(a) => {
+                setSelectedArtist(a);
+              }}
+            />
+          </View>
+        </ImageBackground>
       </View>
     );
   }
@@ -249,7 +258,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     marginTop: 30,
-    marginHorizontal: 4,
   },
   input: {
     height: 40,
@@ -283,5 +291,10 @@ const styles = StyleSheet.create({
     padding: "2%",
     fontSize: 27,
     marginTop: "5%",
+  },
+  background: {
+    width: "100%",
+    height: "100%",
+    opacity: 0.8,
   },
 });
