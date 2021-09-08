@@ -8,6 +8,8 @@ import {
   ScrollView,
   TouchableHighlight,
   Alert,
+  TouchableOpacityBase,
+  TouchableOpacity,
 } from "react-native";
 import { Audio, AVPlaybackStatus } from "expo-av";
 import { Sound } from "expo-av/build/Audio";
@@ -31,7 +33,7 @@ export default function App() {
             value={text}
           />
         </View>
-        <View style={{ backgroundColor: "dodgerblue" }}>
+        <View style={{ backgroundColor: "#f0f0f0" }}>
           <ArtistChoices
             artistNameText={text}
             setSelectedArtist={(a) => {
@@ -39,7 +41,7 @@ export default function App() {
             }}
           />
         </View>
-        <View style={{ backgroundColor: "#f0f0f0", height: 200 }}>
+        <View style={{ backgroundColor: "#f0f0f0", height: 400 }}>
           <SongChoices
             selectedArtist={selectedArtist}
             setSelectedArtist={(a) => {
@@ -65,12 +67,13 @@ function ArtistChoices(param: artistChoiceParam) {
   return (
     <ScrollView style={{ height: 200 }}>
       {allArtists?.map((x) => (
-        <TouchableHighlight
+        <TouchableOpacity
           key={x.id}
+          style={styles.login}
           onPress={() => param.setSelectedArtist(x)}
         >
-          <Text style={styles.margin}>{x.name}</Text>
-        </TouchableHighlight>
+          <Text>{x.name}</Text>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
@@ -171,22 +174,23 @@ function SongChoices(param: songChoiceParam) {
     }
   }
   return (
-    <ScrollView>
+    <ScrollView style={{ height: 300 }}>
       <Text>{score}</Text>
       <View style={{ height: 50, flex: 1 }}>
         <ProgressBar
+          color="red"
           progress={percentageRemaining}
           style={{ height: 50 }}
         ></ProgressBar>
       </View>
       {choiceSongs?.map((x) => (
-        <TouchableHighlight
+        <TouchableOpacity
           key={x.id}
-          style={styles.margin}
+          style={styles.signup}
           onPress={() => selectChoice(x)}
         >
           <Text> {x.title}</Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
@@ -255,5 +259,29 @@ const styles = StyleSheet.create({
   },
   margin: {
     margin: 4,
+  },
+  signup: {
+    backgroundColor: "white",
+    color: "#3A59FF",
+    width: "65%",
+    borderRadius: 25,
+    textAlign: "center",
+    fontWeight: "bold",
+    marginLeft: "18%",
+    padding: "2%",
+    fontSize: 33,
+    marginTop: "10%",
+  },
+  login: {
+    backgroundColor: "#3A59FF",
+    color: "white",
+    width: "75%",
+    borderRadius: 25,
+    textAlign: "center",
+    fontWeight: "bold",
+    marginLeft: "11%",
+    padding: "2%",
+    fontSize: 27,
+    marginTop: "5%",
   },
 });
