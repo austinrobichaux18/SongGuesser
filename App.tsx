@@ -35,6 +35,7 @@ export default function App() {
               Austin's Song Guesser App. Can you reach a perfect score?
             </Text>
             <TextInput
+              placeholderTextColor="white"
               style={styles.input}
               onChangeText={onChangeText}
               placeholder="Enter an Artist"
@@ -69,6 +70,7 @@ type artistChoiceParam = {
 
 function ArtistChoices(param: artistChoiceParam) {
   const [allArtists, setArtists] = useState<Artist[]>();
+
   useEffect(() => {
     GetArtists(param.artistNameText).then((a) => setArtists(a));
   }, [param.artistNameText]);
@@ -184,14 +186,18 @@ function SongChoices(param: songChoiceParam) {
   }
   return (
     <ScrollView style={{ height: 300 }}>
-      <Text>{score}</Text>
-      <View style={{ height: 50, flex: 1 }}>
-        <ProgressBar
-          color="red"
-          progress={percentageRemaining}
-          style={{ height: 50 }}
-        ></ProgressBar>
-      </View>
+      {isGameStarted && (
+        <>
+          <Text>{score}</Text>
+          <View style={{ height: 50, flex: 1 }}>
+            <ProgressBar
+              color="red"
+              progress={percentageRemaining}
+              style={{ height: 50 }}
+            ></ProgressBar>
+          </View>
+        </>
+      )}
       {choiceSongs?.map((x) => (
         <TouchableOpacity
           key={x.id}
@@ -264,6 +270,9 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    color: "white",
+    textDecorationColor: "white",
+    borderColor: "white",
   },
   margin: {
     margin: 4,
@@ -295,6 +304,5 @@ const styles = StyleSheet.create({
   background: {
     width: "100%",
     height: "100%",
-    opacity: 0.8,
   },
 });
